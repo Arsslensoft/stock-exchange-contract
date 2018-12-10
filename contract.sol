@@ -102,4 +102,11 @@ contract StockExchange {
         return (transactions[i].source, transactions[i].target, 
             transactions[i].quantity, transactions[i].price, transactions[i].timestamp, transactions[i].state);
     }    
+    function getNextTransactionIdInvolvingAsset(bytes6 id, int start) public view  returns (int) {
+        for (int i = start; i <= transaction_count; i++) {
+            if(stringsEqual(transactions[i].source, id) == true || stringsEqual(transactions[i].target, id))
+                return i;
+        }
+        return -1;
+    }
 }
