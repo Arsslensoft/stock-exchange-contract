@@ -34,6 +34,11 @@ contract StockExchange {
         }
         return true;
     }
+    // Events
+    event AssetJoined(address indexed asset_address, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+    event TransactionExecuted(address indexed source_address, bytes6 source, 
+    bytes6 target, int8 quantity, int8 price, uint256 timestamp, int8 state);
+    event AssetUpdated(address indexed asset_address, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
 
     // Gets an asset index in the mapping by id
     function getAssetIndex(bytes6 _id) public view returns (int index) {
@@ -56,9 +61,18 @@ contract StockExchange {
 
     // Registers an asset into the assets list
     function register(bytes6 _id, int8 _quantity, int8 _price) public payable returns (bool success) {
-        asset_count = asset_count + 1;
-        Asset memory _asset = Asset(_id, _price, _quantity); 
-        assets[asset_count] = _asset;
+        int asset_index = getAssetIndex(_id);
+        if(asset_index == -1){
+            asset_count = asset_count + 1;
+            Asset memory _asset = Asset(_id, _price, _quantity); 
+            assets[asset_count] = _asset;
+            emit AssetJoined(msg.sender, _id, _quantity, _price, now);
+        } else {
+            assets[asset_index].quantity = _quantity; 
+            assets[asset_index].price = _price;
+            emit AssetUpdated(msg.sender, _id, _quantity, _price, now);
+        }
+
         return true;
     }
     // Gets an asset by index in the list
@@ -88,19 +102,24 @@ contract StockExchange {
             if((assets[ti].quantity - quantity) >= 0) { // validate transaction
                 assets[ti].quantity -= quantity;
                 transactions[transaction_count].state = 1;
+                emit TransactionExecuted(msg.sender, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
             }
             else if(assets[ti].quantity > 0) { // validate partial transaction 
                 transactions[transaction_count].state = 1;
                 transactions[transaction_count].quantity = assets[ti].quantity;
+                emit TransactionExecuted(msg.sender, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
+
                 // create the rejected transaction
                 transaction_count = transaction_count + 1;
                 Transaction memory _t1 = Transaction(assets[si].id, assets[ti].id, quantity - assets[ti].quantity, assets[ti].price, now, 0); 
                 transactions[transaction_count] = _t1;
                 assets[ti].quantity = 0;
                 transactions[transaction_count].state = 2;
+                emit TransactionExecuted(msg.sender, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
             }
             else {
                 transactions[transaction_count].state = 2;
+                emit TransactionExecuted(msg.sender, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
             }
         }
         return true;   
@@ -111,6 +130,7 @@ contract StockExchange {
         return (transactions[i].source, transactions[i].target, 
             transactions[i].quantity, transactions[i].price, transactions[i].timestamp, transactions[i].state);
     }    
+    
     // Get the next transaction index involving an asset
     function getNextTransactionIdInvolvingAsset(bytes6 id, int start) public view  returns (int) {
         if(start < 1 || start > transaction_count)

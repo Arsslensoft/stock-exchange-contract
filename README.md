@@ -123,6 +123,25 @@ I will now describe briefly the functions
 - getTransaction: returns a transaction by a given **id**.
 - getNextTransactionIdInvolvingAsset: returns a transaction index by a given **id** and a **start** position.
 
+## Adding events
+Now we will add events, that will enable us to get the event list, filter them and it's a tweak to get the list of all assets and transactions.
+
+Events in smart contracts write data to the transaction receipt logs, providing a way to get extra information about a smart contract transactions.
+
+```solidity
+    // Events
+    event AssetJoined(address indexed asset_address, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+    event TransactionExecuted(address indexed source_address, bytes6 source, 
+    bytes6 target, int8 quantity, int8 price, uint256 timestamp, int8 state);
+    event AssetUpdated(address indexed asset_address, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+```
+
+Describing the events:
+- AssetJoined: fired when an asset joins the network.
+- AssetUpdated: fired when an asset joins the network again with different quantity and prices (or same), but it already exists in the list.
+- TransactionExecuted: fired whenever a transaction is executed.
+
+
 # Credits
 Goes to me, the moon :p
 
