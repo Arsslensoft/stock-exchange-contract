@@ -77,7 +77,10 @@ contract StockExchange {
     }
     // Gets an asset by index in the list
     function getAssetByIndex(int i) public view returns (bytes6 id, int8 price, int8 quantity) {
-        return (assets[i].id, assets[i].price, assets[i].quantity);
+        if(i >= 1 && i <= asset_count)
+            return (assets[i].id, assets[i].price, assets[i].quantity);
+        else
+            return ("NONEAA",-1,-1);
     }
     // Gets an asset by id (string)
     function getAsset(bytes6 _id) public view returns (bytes6 id, int8 price, int8 quantity) {
@@ -85,7 +88,7 @@ contract StockExchange {
             if(stringsEqual(assets[i].id, _id) == true)
                 return (assets[i].id, assets[i].price, assets[i].quantity);
         } 
-        return ("NONEAA",10,100);
+        return ("NONEAA",-1,-1);
     }
     // executes a transaction where source buys from target a certain quantity
     function transact(bytes6 source, bytes6 target, int8 quantity)  public payable returns (bool success) {
@@ -125,10 +128,13 @@ contract StockExchange {
         return true;   
     }
     // Get transaction by index
-    function getTransaction(int i) public view 
+    function getTransactionByIndex(int i) public view 
         returns (bytes6 source, bytes6 target, int8 quantity, int8 price, uint256 timestamp, int8 state ) {
-        return (transactions[i].source, transactions[i].target, 
-            transactions[i].quantity, transactions[i].price, transactions[i].timestamp, transactions[i].state);
+        if(i >= 1 && i <= transaction_count)
+            return (transactions[i].source, transactions[i].target, 
+                transactions[i].quantity, transactions[i].price, transactions[i].timestamp, transactions[i].state);
+        else
+            return ("NONEAA", "NONEAA",-1,-1, 0, 2);
     }    
     
     // Get the next transaction index involving an asset

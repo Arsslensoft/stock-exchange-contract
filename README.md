@@ -120,7 +120,7 @@ I will now describe briefly the functions
 - getTransactionsCount: returns the number of transactions.
 - getAssetByIndex: returns an Asset by a given **index**.
 - getAsset: returns an Asset by a given **id**.
-- getTransaction: returns a transaction by a given **id**.
+- getTransactionByIndex: returns a transaction by a given index **id**.
 - getNextTransactionIdInvolvingAsset: returns a transaction index by a given **id** and a **start** position.
 
 ## Adding events
