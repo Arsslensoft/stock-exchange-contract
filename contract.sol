@@ -36,7 +36,7 @@ contract StockExchange {
     }
     // Events
     event AssetJoined(address indexed asset_address, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
-    event TransactionExecuted(address indexed source_address, bytes6 source, 
+    event TransactionExecuted(address indexed source_address, int source_asset_index, int target_asset_index, bytes6 source, 
     bytes6 target, int8 quantity, int8 price, uint256 timestamp, int8 state);
     event AssetUpdated(address indexed asset_address, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
 
@@ -105,12 +105,12 @@ contract StockExchange {
             if((assets[ti].quantity - quantity) >= 0) { // validate transaction
                 assets[ti].quantity -= quantity;
                 transactions[transaction_count].state = 1;
-                emit TransactionExecuted(msg.sender, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
+                emit TransactionExecuted(msg.sender,si,ti, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
             }
             else if(assets[ti].quantity > 0) { // validate partial transaction 
                 transactions[transaction_count].state = 1;
                 transactions[transaction_count].quantity = assets[ti].quantity;
-                emit TransactionExecuted(msg.sender, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
+                emit TransactionExecuted(msg.sender, si, ti, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
 
                 // create the rejected transaction
                 transaction_count = transaction_count + 1;
@@ -118,11 +118,11 @@ contract StockExchange {
                 transactions[transaction_count] = _t1;
                 assets[ti].quantity = 0;
                 transactions[transaction_count].state = 2;
-                emit TransactionExecuted(msg.sender, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
+                emit TransactionExecuted(msg.sender, si, ti, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
             }
             else {
                 transactions[transaction_count].state = 2;
-                emit TransactionExecuted(msg.sender, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
+                emit TransactionExecuted(msg.sender, si, ti, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
             }
         }
         return true;   
