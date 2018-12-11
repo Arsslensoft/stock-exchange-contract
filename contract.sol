@@ -35,10 +35,10 @@ contract StockExchange {
         return true;
     }
     // Events
-    event AssetJoined(address indexed asset_address, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+    event AssetJoined(address indexed asset_address, int index, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
     event TransactionExecuted(address indexed source_address, int source_asset_index, int target_asset_index, bytes6 source, 
     bytes6 target, int8 quantity, int8 price, uint256 timestamp, int8 state);
-    event AssetUpdated(address indexed asset_address, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+    event AssetUpdated(address indexed asset_address, int index, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
 
     // Gets an asset index in the mapping by id
     function getAssetIndex(bytes6 _id) public view returns (int index) {
@@ -66,11 +66,11 @@ contract StockExchange {
             asset_count = asset_count + 1;
             Asset memory _asset = Asset(_id, _price, _quantity); 
             assets[asset_count] = _asset;
-            emit AssetJoined(msg.sender, _id, _quantity, _price, now);
+            emit AssetJoined(msg.sender,asset_count,  _id, _quantity, _price, now);
         } else {
             assets[asset_index].quantity = _quantity; 
             assets[asset_index].price = _price;
-            emit AssetUpdated(msg.sender, _id, _quantity, _price, now);
+            emit AssetUpdated(msg.sender, asset_index, _id, _quantity, _price, now);
         }
 
         return true;
