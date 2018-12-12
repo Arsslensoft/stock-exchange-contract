@@ -2,6 +2,7 @@ pragma solidity ^0.5.0;
 contract StockExchange {
     // The asset structure
     struct Asset {
+        address creator;
         bytes6 id;  // 6 bytes string
         int8 price;
         int8 quantity;
@@ -64,7 +65,7 @@ contract StockExchange {
         int asset_index = getAssetIndex(_id);
         if(asset_index == -1){
             asset_count = asset_count + 1;
-            Asset memory _asset = Asset(_id, _price, _quantity); 
+            Asset memory _asset = Asset(msg.sender, _id, _price, _quantity); 
             assets[asset_count] = _asset;
             emit AssetJoined(msg.sender,asset_count,  _id, _quantity, _price, now);
         } else {
@@ -106,11 +107,13 @@ contract StockExchange {
                 assets[ti].quantity -= quantity;
                 transactions[transaction_count].state = 1;
                 emit TransactionExecuted(msg.sender,si,ti, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
+                emit AssetUpdated(assets[ti].creator, ti, assets[ti].id, assets[ti].quantity, assets[ti].price, now);
             }
             else if(assets[ti].quantity > 0) { // validate partial transaction 
                 transactions[transaction_count].state = 1;
                 transactions[transaction_count].quantity = assets[ti].quantity;
                 emit TransactionExecuted(msg.sender, si, ti, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
+                emit AssetUpdated(assets[ti].creator, ti, assets[ti].id, assets[ti].quantity, assets[ti].price, now);
 
                 // create the rejected transaction
                 transaction_count = transaction_count + 1;
