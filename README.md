@@ -30,8 +30,9 @@ I will now add the asset
 ```solidity
 pragma solidity ^0.5.0;
 contract StockExchange {
-   struct Asset {
-        bytes6 id; 
+    struct Asset {
+        address creator;
+        bytes6 id;  // 6 bytes string
         int8 price;
         int8 quantity;
     }
@@ -45,6 +46,12 @@ I will now add the transaction
 ```solidity
 pragma solidity ^0.5.0;
 contract StockExchange {
+    struct Asset {
+        address creator;
+        bytes6 id;  // 6 bytes string
+        int8 price;
+        int8 quantity;
+    }
     struct Transaction {
         bytes6 source;
         bytes6 target;
@@ -85,6 +92,12 @@ Now I will add the mappings
 ```solidity
 pragma solidity ^0.5.0;
 contract StockExchange {
+    struct Asset {
+        address creator;
+        bytes6 id;  // 6 bytes string
+        int8 price;
+        int8 quantity;
+    }
     struct Transaction {
         bytes6 source;
         bytes6 target;
@@ -130,10 +143,11 @@ Events in smart contracts write data to the transaction receipt logs, providing 
 
 ```solidity
     // Events
-    event AssetJoined(address indexed asset_address, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
-    event TransactionExecuted(address indexed source_address, bytes6 source, 
+    event AssetJoined(address indexed asset_address, int index, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+    event TransactionExecuted(address indexed source_address, int source_asset_index, int target_asset_index, bytes6 source, 
     bytes6 target, int8 quantity, int8 price, uint256 timestamp, int8 state);
-    event AssetUpdated(address indexed asset_address, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+    event AssetUpdated(address indexed asset_address, int index, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+
 ```
 
 Describing the events:
