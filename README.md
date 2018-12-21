@@ -33,8 +33,8 @@ contract StockExchange {
     struct Asset {
         address creator;
         bytes6 id;  // 6 bytes string
-        int8 price;
-        int8 quantity;
+        int price;
+        int quantity;
     }
 }
 ```
@@ -49,14 +49,14 @@ contract StockExchange {
     struct Asset {
         address creator;
         bytes6 id;  // 6 bytes string
-        int8 price;
-        int8 quantity;
+        int price;
+        int quantity;
     }
     struct Transaction {
         bytes6 source;
         bytes6 target;
-        int8 quantity;
-        int8 price;
+        int quantity;
+        int price;
         uint256 timestamp;
         int8 state; // 0:PENDING / 1:VALIDATED / 2:REJECTED
     }
@@ -95,14 +95,14 @@ contract StockExchange {
     struct Asset {
         address creator;
         bytes6 id;  // 6 bytes string
-        int8 price;
-        int8 quantity;
+        int price;
+        int quantity;
     }
     struct Transaction {
         bytes6 source;
         bytes6 target;
-        int8 quantity;
-        int8 price;
+        int quantity;
+        int price;
         uint256 timestamp;
         int8 state; // 0:PENDING / 1:VALIDATED / 2:REJECTED
     }
@@ -143,10 +143,10 @@ Events in smart contracts write data to the transaction receipt logs, providing 
 
 ```solidity
     // Events
-    event AssetJoined(address indexed asset_address, int index, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+    event AssetJoined(address indexed asset_address, int index, bytes6 id, int quantity, int price, uint256 timestamp);
     event TransactionExecuted(address indexed source_address, int source_asset_index, int target_asset_index, bytes6 source, 
-    bytes6 target, int8 quantity, int8 price, uint256 timestamp, int8 state);
-    event AssetUpdated(address indexed asset_address, int index, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+    bytes6 target, int quantity, int price, uint256 timestamp, int8 state);
+    event AssetUpdated(address indexed asset_address, int index, bytes6 id, int quantity, int price, uint256 timestamp);
 
 ```
 

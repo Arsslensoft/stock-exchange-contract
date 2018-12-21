@@ -4,15 +4,15 @@ contract StockExchange {
     struct Asset {
         address creator;
         bytes6 id;  // 6 bytes string
-        int8 price;
-        int8 quantity;
+        int price;
+        int quantity;
     }
     // The transaction structure
     struct Transaction {
         bytes6 source; // 6 bytes string
         bytes6 target; // 6 bytes string
-        int8 quantity;
-        int8 price;
+        int quantity;
+        int price;
         uint256 timestamp;
         int8 state; // 0:PENDING / 1:VALIDATED / 2:REJECTED
     }
@@ -36,10 +36,10 @@ contract StockExchange {
         return true;
     }
     // Events
-    event AssetJoined(address indexed asset_address, int index, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+    event AssetJoined(address indexed asset_address, int index, bytes6 id, int quantity, int price, uint256 timestamp);
     event TransactionExecuted(address indexed source_address, int source_asset_index, int target_asset_index, bytes6 source, 
-    bytes6 target, int8 quantity, int8 price, uint256 timestamp, int8 state);
-    event AssetUpdated(address indexed asset_address, int index, bytes6 id, int8 quantity, int8 price, uint256 timestamp);
+    bytes6 target, int quantity, int price, uint256 timestamp, int8 state);
+    event AssetUpdated(address indexed asset_address, int index, bytes6 id, int quantity, int price, uint256 timestamp);
 
     // Gets an asset index in the mapping by id
     function getAssetIndex(bytes6 _id) public view returns (int index) {
@@ -61,7 +61,7 @@ contract StockExchange {
     }  
 
     // Registers an asset into the assets list
-    function register(bytes6 _id, int8 _quantity, int8 _price) public payable returns (bool success) {
+    function register(bytes6 _id, int _quantity, int _price) public payable returns (bool success) {
         int asset_index = getAssetIndex(_id);
         if(asset_index == -1){
             asset_count = asset_count + 1;
@@ -77,14 +77,14 @@ contract StockExchange {
         return true;
     }
     // Gets an asset by index in the list
-    function getAssetByIndex(int i) public view returns (bytes6 id, int8 price, int8 quantity) {
+    function getAssetByIndex(int i) public view returns (bytes6 id, int price, int quantity) {
         if(i >= 1 && i <= asset_count)
             return (assets[i].id, assets[i].price, assets[i].quantity);
         else
             return ("NONEAA",-1,-1);
     }
     // Gets an asset by id (string)
-    function getAsset(bytes6 _id) public view returns (bytes6 id, int8 price, int8 quantity) {
+    function getAsset(bytes6 _id) public view returns (bytes6 id, int price, int quantity) {
         for (int i = 1; i <= asset_count; i++) {
             if(stringsEqual(assets[i].id, _id) == true)
                 return (assets[i].id, assets[i].price, assets[i].quantity);
@@ -92,7 +92,7 @@ contract StockExchange {
         return ("NONEAA",-1,-1);
     }
     // executes a transaction where source buys from target a certain quantity
-    function transact(bytes6 source, bytes6 target, int8 quantity)  public payable returns (bool success) {
+    function transact(bytes6 source, bytes6 target, int quantity)  public payable returns (bool success) {
         int si = getAssetIndex(source);
         int ti = getAssetIndex(target);
         if(si == -1 || ti == -1) {
@@ -113,7 +113,6 @@ contract StockExchange {
                 transactions[transaction_count].state = 1;
                 transactions[transaction_count].quantity = assets[ti].quantity;
                 emit TransactionExecuted(msg.sender, si, ti, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
-                emit AssetUpdated(assets[ti].creator, ti, assets[ti].id, assets[ti].quantity, assets[ti].price, now);
 
                 // create the rejected transaction
                 transaction_count = transaction_count + 1;
@@ -122,6 +121,7 @@ contract StockExchange {
                 assets[ti].quantity = 0;
                 transactions[transaction_count].state = 2;
                 emit TransactionExecuted(msg.sender, si, ti, transactions[transaction_count].source, transactions[transaction_count].target, transactions[transaction_count].quantity, transactions[transaction_count].price, transactions[transaction_count].timestamp, transactions[transaction_count].state);
+                emit AssetUpdated(assets[ti].creator, ti, assets[ti].id, assets[ti].quantity, assets[ti].price, now);
             }
             else {
                 transactions[transaction_count].state = 2;
@@ -132,7 +132,7 @@ contract StockExchange {
     }
     // Get transaction by index
     function getTransactionByIndex(int i) public view 
-        returns (bytes6 source, bytes6 target, int8 quantity, int8 price, uint256 timestamp, int8 state ) {
+        returns (bytes6 source, bytes6 target, int quantity, int price, uint256 timestamp, int8 state ) {
         if(i >= 1 && i <= transaction_count)
             return (transactions[i].source, transactions[i].target, 
                 transactions[i].quantity, transactions[i].price, transactions[i].timestamp, transactions[i].state);
