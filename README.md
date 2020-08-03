@@ -159,4 +159,6 @@ Describing the events:
 # Credits
 Goes to me, the moon :p
 
+# Donate
+<a href="https://www.buymeacoffee.com/arsslensoft" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>
 
